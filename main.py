@@ -4,41 +4,45 @@ dotenv.load_dotenv()
 
 from crewai import Crew, Agent, Task
 from crewai.project import CrewBase, agent, task, crew
-from tools import count_letters
+from tools import search_tool, scrape_tool
 
 
 @CrewBase
-class TranslatorCrew:
+class NewsReaderCrew:
 
     @agent
-    def translator_agent(self):
+    def news_hunter_agent(self):
         return Agent(
-            config=self.agents_config["translator_agent"],
+            config=self.agents_config["news_hunter_agent"],
+            tools=[search_tool, scrape_tool],
         )
 
     @agent
-    def counter_agent(self):
+    def summarizer_agent(self):
+        return Agent(config=self.agents_config["summarizer_agent"], tools=[scrape_tool])
+
+    @agent
+    def curator_agent(self):
         return Agent(
-            config=self.agents_config["counter_agent"],
+            config=self.agents_config["curator_agent"],
         )
 
     @task
-    def translate_task(self):
+    def content_harvesting_task(self):
         return Task(
-            config=self.tasks_config["translate_task"],
+            config=self.tasks_config["content_harvesting_task"],
         )
 
     @task
-    def retranslate_task(self):
+    def summarization_task(self):
         return Task(
-            config=self.tasks_config["retranslate_task"],
+            config=self.tasks_config["summarization_task"],
         )
 
     @task
-    def count_task(self):
+    def final_report_assembly_task(self):
         return Task(
-            config=self.tasks_config["count_task"],
-            tools=[count_letters],
+            config=self.tasks_config["final_report_assembly_task"],
         )
 
     @crew
@@ -50,6 +54,4 @@ class TranslatorCrew:
         )
 
 
-TranslatorCrew().assemble_crew().kickoff(
-    inputs={"sentence": "hi, my name is jung. i'm from korea."}
-)
+NewsReaderCrew().assemble_crew().kickoff(inputs={"topic": "일본의 엔저정책"})
