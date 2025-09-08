@@ -31,6 +31,7 @@ class NewsReaderCrew:
     def content_harvesting_task(self):
         return Task(
             config=self.tasks_config["content_harvesting_task"],
+            markdown=True
         )
 
     @task
